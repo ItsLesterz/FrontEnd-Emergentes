@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
     }
 
     // Verificar si el email ya está registrado
-    const userExists = await pool.query("SELECT * FROM Usuarios WHERE email = ?", [email]);
+    const [userExists] = await pool.query("SELECT * FROM Usuarios WHERE email = ?", [email]);
     if (userExists.length > 0) {
       return res.status(400).json({ success: false, message: "El email ya está registrado." });
     }
@@ -35,5 +35,32 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ success: false, message: "Error al registrar usuario." });
   }
 });
+
+// Ruta para obtener un usuario por email
+router.get("/user/:email", async (req, res) => {
+  const { email } = req.params;
+  try {
+    const [user] = await pool.query("SELECT * FROM Usuarios WHERE email = ?", [email]);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error al obtener usuario" });
+  }
+});
+
+// Ruta para obtener todos los usuarios
+router.get("/users", async (req, res) => {
+  try {
+    const [users] = await pool.query("SELECT * FROM Usuarios");
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error al obtener usuarios" });
+  }
+});
+
 
 module.exports = router;
