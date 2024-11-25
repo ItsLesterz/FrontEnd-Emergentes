@@ -10,23 +10,25 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    try {
-      // Enviar credenciales al backend
-      const response = await axios.post("http://localhost:5000/api/login", {
-        username,
-        password,
-      });
-
-      if (response.data.success) {
-        // Redirigir al usuario a la página de inicio después del login
-        navigate("/home");
-      } else {
-        alert(response.data.message || "Credenciales incorrectas.");
+    // Simulación de inicio de sesión
+    if (username === "lester" && password === "123") {
+      navigate("/landing");
+    } else {
+      // Puedes descomentar la llamada a la API si tu backend está disponible
+      /*
+      try {
+        const response = await axios.post("/api/login", { username, password });
+        if (response.data.success) {
+          navigate("/home");
+        } else {
+          alert("Credenciales incorrectas.");
+        }
+      } catch (error) {
+        console.error("Error en el inicio de sesión", error);
+        alert("Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde.");
       }
-    } catch (error) {
-      console.error("Error en el inicio de sesión", error);
-      alert("Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde.");
+      */
+      alert("Credenciales incorrectas.");
     }
   };
 

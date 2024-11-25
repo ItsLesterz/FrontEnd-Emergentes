@@ -1,33 +1,39 @@
-// src/components/Navbar.js
-import React from "react";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom'; // Para la navegación
+import { DropdownButton, Dropdown } from 'react-bootstrap'; // Para el dropdown
 
-const CustomNavbar = ({ onLogout }) => {
-  const navigate = useNavigate();
-
+function Navbar() {
   return (
-    <Navbar bg="light" expand="lg" className="px-3">
-      <NavDropdown title="Perfil" id="basic-nav-dropdown" align="start">
-            <NavDropdown.Item onClick={() => navigate("/profile")}>
-              Ver Perfil
-            </NavDropdown.Item>
-            <NavDropdown.Item onClick={onLogout}>
-              Cerrar Sesión
-            </NavDropdown.Item>
-          </NavDropdown>
-      
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="me-auto align-items-center">
-          <Nav.Link href="#home">Inicio</Nav.Link>
-          <Nav.Link href="#documents">Documentos</Nav.Link>
-          <Nav.Link href="#about">Acerca de</Nav.Link>
-          <Navbar.Brand href="#home">Documentación Digital</Navbar.Brand>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
-  );
-};
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <Link className="navbar-brand" to="/landing">
+          <h2>DocStation</h2> {/* Título actualizado */}
+        </Link>
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link className="nav-link active" to="/landing">Inicio</Link> {/* Cambiado para redirigir a /landing */}
+            </li>
 
-export default CustomNavbar;
+            {/* Dropdown para Documentos */}
+            <li className="nav-item">
+              <DropdownButton
+                variant="link"
+                id="dropdown-docs"
+                title="Documentos" // Título de la opción
+              >
+                <Dropdown.Item as={Link} to="/home">Subir Documentos</Dropdown.Item> {/* Ruta para subir documentos */}
+                <Dropdown.Item as={Link} to="/search">Buscar Documentos</Dropdown.Item> {/* Ruta para buscar documentos */}
+              </DropdownButton>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;

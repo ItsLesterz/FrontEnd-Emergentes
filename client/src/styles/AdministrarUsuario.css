@@ -1,0 +1,89 @@
+/* AdministrarUsuario.css */
+.admin-title {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+  
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  button {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button.btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button.btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  button.btn-warning {
+    background-color: #ffc107;
+    color: black;
+  }
+  
+  button.btn-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  button.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    width: 120px;
+    margin-top: 10px;
+  }
+  
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  

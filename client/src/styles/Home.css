@@ -1,67 +1,32 @@
-/* src/pages/Home.css */
-.document-section {
-    padding: 20px;
-  }
-  
-  .upload-button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
-  
-  .view-options {
-    margin: 10px 0;
-  }
-  
-  .document-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .document-list li {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-  }
-  
-  .document-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .document-table th,
-  .document-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .document-table th {
-    background-color: #f2f2f2;
-  }
+/* Estilos para la sección de "Subir Documento" */
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 20px;
+}
 
-  .preview-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .preview-content {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    position: relative;
-    max-width: 90%;
-    max-height: 90%;
-    overflow: auto;
-  }
-  
-  
+.upload-form input[type="file"] {
+  font-size: 1rem;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.upload-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.upload-form button:hover {
+  background-color: #45a049;
+}
