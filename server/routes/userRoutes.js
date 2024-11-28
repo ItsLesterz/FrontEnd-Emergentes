@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const router = express.Router();
 
@@ -36,6 +37,41 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Ruta para iniciar sesión
+// Ruta para hacer login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Normalizar el email (remover espacios y convertir a minúsculas)
+    const normalizedEmail = email.trim().toLowerCase();
+
+    console.log("Correo normalizado:", normalizedEmail);  // Log para ver el correo recibido
+
+    const [user] = await pool.query("SELECT * FROM Usuarios WHERE LOWER(email) = LOWER(?)", [normalizedEmail]);
+    
+    // Verificar si el usuario fue encontrado
+    if (!user || user.length === 0) {
+      console.log("Usuario no encontrado con correo:", normalizedEmail);  // Log de cuando no se encuentra
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // Si el usuario existe, verificar la contraseña
+    const match = await bcrypt.compare(password, user[0].contraseña);
+    if (!match) {
+      return res.status(401).json({ success: false, message: "Contraseña incorrecta" });
+    }
+
+    res.status(200).json({ success: true, message: "Inicio de sesión exitoso", user: user[0] });
+
+  } catch (error) {
+    console.error("Error en la ruta de login:", error);
+    res.status(500).json({ success: false, message: "Error al procesar el login" });
+  }
+});
+
+
+
 // Ruta para obtener un usuario por email
 router.get("/user/:email", async (req, res) => {
   const { email } = req.params;
@@ -61,6 +97,5 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ success: false, message: "Error al obtener usuarios" });
   }
 });
-
 
 module.exports = router;
