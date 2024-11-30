@@ -4,45 +4,29 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
-    try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      });
-  
-      console.log("Respuesta del backend:", response);
-  
-      if (response.data.success) {
-        navigate("/landing");
-      } else {
-        alert(response.data.message || "Credenciales incorrectas.");
-      }
-    } catch (error) {
-      console.error("Detalles del error:", error);
-      alert(
-        error.response?.data?.message ||
-        "Ocurrió un error en el inicio de sesión. Inténtalo de nuevo más tarde."
-      );
+    // Simulación de inicio de sesión
+    if (username === "lester" && password === "123") {
+      navigate("/landing");
+    } else {
+      alert("Credenciales incorrectas.");
     }
   };
-  
 
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleLogin}>
         <h2>Iniciar Sesión</h2>
         <input
-          type="email"
-          placeholder="Correo Electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input

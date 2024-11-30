@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { FaEye, FaDownload, FaUpload } from "react-icons/fa";
+import { FaEye, FaDownload, FaUpload, FaTrashAlt } from "react-icons/fa";
 import '../styles/Home.css'; // Importar el CSS
 
 function Home() {
   const [documents, setDocuments] = useState([]);
   const [view, setView] = useState("list");
   const [uploadingFile, setUploadingFile] = useState(null);
+  const [fileName, setFileName] = useState(""); // Para el nombre del archivo
+  const [uploadDate, setUploadDate] = useState(""); // Para la fecha de subida
+  const [showUploadForm, setShowUploadForm] = useState(false); // Controla la visibilidad del formulario emergente
   const [previewDocument, setPreviewDocument] = useState(null);
   const navigate = useNavigate();
 
@@ -23,13 +26,17 @@ function Home() {
     if (file) {
       const newDocument = {
         id: Date.now(),
-        name: file.name,
+        name: fileName || file.name,
+        uploadDate: uploadDate || new Date().toLocaleString(),
         url: URL.createObjectURL(file),
         type: file.type,
       };
 
       setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
       setUploadingFile(null);
+      setFileName("");
+      setUploadDate("");
+      setShowUploadForm(false); // Cerrar el formulario después de subir el archivo
     }
   };
 
@@ -45,27 +52,75 @@ function Home() {
     setPreviewDocument(null);
   };
 
+  const handleDeleteDocument = (docId) => {
+    const confirmDelete = window.confirm("¿Estás seguro de eliminar este archivo?");
+    if (confirmDelete) {
+      setDocuments((prevDocuments) =>
+        prevDocuments.filter((doc) => doc.id !== docId)
+      );
+    }
+  };
+
   return (
     <div>
       <Navbar onLogout={handleLogout} />
       <div className="container mt-4">
         <h2>Documentos Subidos</h2>
-        <form onSubmit={handleUploadDocument} className="mb-3 d-flex align-items-center">
-          <label htmlFor="file-upload" className="btn btn-primary me-2">
-            <FaUpload />
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
-            onChange={(e) => setUploadingFile(e.target.files[0])}
-            required
-            style={{ display: 'none' }}
-          />
-          <button type="submit" className="btn btn-success" disabled={!uploadingFile}>
-            Subir
-          </button>
-        </form>
+
+        <button className="btn btn-primary mb-3" onClick={() => setShowUploadForm(true)}>
+          <FaUpload /> Subir Documento
+        </button>
+
+        {/* Formulario emergente (Modal) */}
+        {showUploadForm && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <form onSubmit={handleUploadDocument} className="form">
+                <h4>Subir Documento</h4>
+                <div className="mb-3">
+                  <label htmlFor="fileName" className="form-label">Nombre del archivo</label>
+                  <input
+                    id="fileName"
+                    type="text"
+                    className="form-control"
+                    value={fileName}
+                    onChange={(e) => setFileName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="uploadDate" className="form-label">Fecha de subida</label>
+                  <input
+                    id="uploadDate"
+                    type="text"
+                    className="form-control"
+                    value={uploadDate || new Date().toLocaleString()}
+                    readOnly
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="file-upload" className="btn btn-secondary">Seleccionar Archivo</label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                    onChange={(e) => setUploadingFile(e.target.files[0])}
+                    required
+                    style={{ display: 'none' }}
+                  />
+                </div>
+                <div className="mb-3 text-end">
+                  <button type="submit" className="btn btn-success" disabled={!uploadingFile}>
+                    Subir
+                  </button>
+                  <button type="button" className="btn btn-danger ms-2" onClick={() => setShowUploadForm(false)}>
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         <div className="mb-3">
           <button className="btn btn-secondary me-2" onClick={() => setView("list")}>
@@ -88,6 +143,9 @@ function Home() {
                   <a href={doc.url} download={doc.name} className="btn btn-link">
                     <FaDownload />
                   </a>
+                  <button className="btn btn-link" onClick={() => handleDeleteDocument(doc.id)}>
+                    <FaTrashAlt />
+                  </button>
                 </div>
               </li>
             ))}
@@ -104,6 +162,9 @@ function Home() {
                   <a href={doc.url} download={doc.name} className="btn btn-link">
                     <FaDownload />
                   </a>
+                  <button className="btn btn-link" onClick={() => handleDeleteDocument(doc.id)}>
+                    <FaTrashAlt />
+                  </button>
                 </div>
               </div>
             ))}

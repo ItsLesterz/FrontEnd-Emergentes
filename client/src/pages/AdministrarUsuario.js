@@ -8,12 +8,12 @@ function AdministrarUsuarios() {
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   const [users, setUsers] = useState([
-    { id: 1, email: "admin@unitec.edu", role: "admin" },
-    { id: 2, email: "editor@unitec.edu", role: "editor" },
-    { id: 3, email: "lector@unitec.edu", role: "lector" },
+    { id: 1, name: "Admin", email: "admin@unitec.edu", role: "admin" },
+    { id: 2, name: "Editor", email: "editor@unitec.edu", role: "editor" },
+    { id: 3, name: "Lector", email: "lector@unitec.edu", role: "lector" },
   ]);
 
-  const [newUser, setNewUser] = useState({ email: "", role: "", password: "" });
+  const [newUser, setNewUser] = useState({ name: "", email: "", role: "", password: "" });
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -30,8 +30,11 @@ function AdministrarUsuarios() {
       alert("Las contraseñas no coinciden");
       return;
     }
-    setUsers([...users, { id: Date.now(), email: newUser.email, role: newUser.role }]);
-    setNewUser({ email: "", role: "", password: "" });
+    setUsers([
+      ...users,
+      { id: Date.now(), name: newUser.name, email: newUser.email, role: newUser.role },
+    ]);
+    setNewUser({ name: "", email: "", role: "", password: "" });
     setConfirmPassword("");
     setShowCreateUser(false);
     alert("Usuario creado con éxito");
@@ -60,7 +63,7 @@ function AdministrarUsuarios() {
     <div>
       <Navbar />
       <h2 className="admin-title">Administrar Usuarios</h2> {/* Título agregado arriba del contenedor */}
-      <div className="admin-container">
+      <div className="container">
         <div className="buttons-container">
           <button
             className="btn btn-primary"
@@ -88,6 +91,12 @@ function AdministrarUsuarios() {
         <div className="modal">
           <div className="modal-content">
             <h3>Crear Usuario</h3>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={newUser.name}
+              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+            />
             <input
               type="email"
               placeholder="Correo electrónico"
@@ -133,7 +142,7 @@ function AdministrarUsuarios() {
             <ul>
               {users.map((user) => (
                 <li key={user.id}>
-                  {user.email} ({user.role})
+                  {user.name} ({user.email}, {user.role})
                   <button
                     onClick={() => handleDeleteUser(user.id)}
                     className="btn btn-danger"
