@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { FaEye, FaDownload, FaUpload, FaTrashAlt } from "react-icons/fa";
+import { FaEye, FaDownload, FaUpload } from "react-icons/fa";
 import '../styles/Home.css'; // Importar el CSS
 
 function Home() {
   const [documents, setDocuments] = useState([]);
   const [view, setView] = useState("list");
   const [uploadingFile, setUploadingFile] = useState(null);
-  const [fileName, setFileName] = useState(""); // Para el nombre del archivo
-  const [uploadDate, setUploadDate] = useState(""); // Para la fecha de subida
-  const [showUploadForm, setShowUploadForm] = useState(false); // Controla la visibilidad del formulario emergente
+  const [fileName, setFileName] = useState(""); 
+  const [uploadDate, setUploadDate] = useState(""); 
+  const [description, setDescription] = useState(""); // Para la descripción
+  const [category, setCategory] = useState("Manual"); // Para la categoría
+  const [showUploadForm, setShowUploadForm] = useState(false); 
   const [previewDocument, setPreviewDocument] = useState(null);
   const navigate = useNavigate();
 
@@ -28,6 +30,8 @@ function Home() {
         id: Date.now(),
         name: fileName || file.name,
         uploadDate: uploadDate || new Date().toLocaleString(),
+        description,
+        category,
         url: URL.createObjectURL(file),
         type: file.type,
       };
@@ -36,7 +40,9 @@ function Home() {
       setUploadingFile(null);
       setFileName("");
       setUploadDate("");
-      setShowUploadForm(false); // Cerrar el formulario después de subir el archivo
+      setDescription(""); // Limpiar la descripción
+      setCategory("Manual"); // Restablecer la categoría
+      setShowUploadForm(false); 
     }
   };
 
@@ -52,26 +58,16 @@ function Home() {
     setPreviewDocument(null);
   };
 
-  const handleDeleteDocument = (docId) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar este archivo?");
-    if (confirmDelete) {
-      setDocuments((prevDocuments) =>
-        prevDocuments.filter((doc) => doc.id !== docId)
-      );
-    }
-  };
-
   return (
     <div>
       <Navbar onLogout={handleLogout} />
       <div className="container mt-4">
         <h2>Documentos Subidos</h2>
-
+        
         <button className="btn btn-primary mb-3" onClick={() => setShowUploadForm(true)}>
           <FaUpload /> Subir Documento
         </button>
 
-        {/* Formulario emergente (Modal) */}
         {showUploadForm && (
           <div className="modal-overlay">
             <div className="modal-content">
@@ -97,6 +93,32 @@ function Home() {
                     value={uploadDate || new Date().toLocaleString()}
                     readOnly
                   />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">Descripción</label>
+                  <textarea
+                    id="description"
+                    className="form-control"
+                    rows="3"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="category" className="form-label">Categoría</label>
+                  <select
+                    id="category"
+                    className="form-select"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    <option value="Manual">Manual</option>
+                    <option value="Diccionario">Diccionario</option>
+                    <option value="Libro de Texto">Libro de Texto</option>
+                    <option value="Otros">Otros</option>
+                  </select>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="file-upload" className="btn btn-secondary">Seleccionar Archivo</label>
@@ -134,18 +156,19 @@ function Home() {
         {view === "list" ? (
           <ul className="list-group">
             {documents.map((doc) => (
-              <li key={doc.id} className="list-group-item d-flex justify-content-between align-items-center">
-                {doc.name}
+              <li key={doc.id} className="list-group-item">
                 <div>
-                  <button className="btn btn-link" onClick={() => handleViewDocument(doc.url)}>
-                    <FaEye />
-                  </button>
-                  <a href={doc.url} download={doc.name} className="btn btn-link">
-                    <FaDownload />
-                  </a>
-                  <button className="btn btn-link" onClick={() => handleDeleteDocument(doc.id)}>
-                    <FaTrashAlt />
-                  </button>
+                  <strong>{doc.name}</strong>
+                  <p>{doc.description}</p>
+                  <small>Categoría: {doc.category}</small>
+                  <div className="text-end">
+                    <button className="btn btn-link" onClick={() => handleViewDocument(doc.url)}>
+                      <FaEye />
+                    </button>
+                    <a href={doc.url} download={doc.name} className="btn btn-link">
+                      <FaDownload />
+                    </a>
+                  </div>
                 </div>
               </li>
             ))}
@@ -153,18 +176,17 @@ function Home() {
         ) : (
           <div className="d-flex flex-wrap">
             {documents.map((doc) => (
-              <div key={doc.id} className="card m-2" style={{ width: "150px" }}>
+              <div key={doc.id} className="card m-2" style={{ width: "200px" }}>
                 <div className="card-body text-center">
                   <h5 className="card-title">{doc.name}</h5>
+                  <p className="card-text">{doc.description}</p>
+                  <p className="card-text"><small>{doc.category}</small></p>
                   <button className="btn btn-link" onClick={() => handlePreviewDocument(doc)}>
                     <FaEye />
                   </button>
                   <a href={doc.url} download={doc.name} className="btn btn-link">
                     <FaDownload />
                   </a>
-                  <button className="btn btn-link" onClick={() => handleDeleteDocument(doc.id)}>
-                    <FaTrashAlt />
-                  </button>
                 </div>
               </div>
             ))}
