@@ -38,7 +38,6 @@ router.post("/register", async (req, res) => {
 });
 
 // Ruta para iniciar sesión
-// Ruta para hacer login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 

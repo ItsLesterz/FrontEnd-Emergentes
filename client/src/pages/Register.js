@@ -5,27 +5,35 @@ import "../styles/Auth.css";
 
 function Register() {
   const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [idRol, setIdRol] = useState("1"); // Valor por defecto del rol
+  const [errorMessage, setErrorMessage] = useState(""); // Para manejar errores
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Validar que todos los campos estén llenos
+    if (!nombre || !email || !password || !idRol) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+
     try {
       const response = await axios.post("/api/register", {
         nombre,
-        apellido,
         email,
-        username,
-        password,
+        contraseña: password, // El backend espera 'contraseña'
+        id_rol: idRol, // Se envía el rol seleccionado
       });
+
       if (response.data.success) {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Error en el registro", error);
+      setErrorMessage(error.response?.data?.message || "Error al registrar usuario");
+      console.error("Error en el registro:", error);
     }
   };
 
@@ -35,15 +43,9 @@ function Register() {
         <h2>Registro</h2>
         <input
           type="text"
-          placeholder="Nombres"
+          placeholder="Nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Apellidos"
-          value={apellido}
-          onChange={(e) => setApellido(e.target.value)}
         />
         <input
           type="email"
@@ -52,17 +54,19 @@ function Register() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
           type="password"
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <select
+          value={idRol}
+          onChange={(e) => setIdRol(e.target.value)}
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+        </select>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <button type="submit">Registrar</button>
         <div className="redirect-link">
           ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión aquí</Link>

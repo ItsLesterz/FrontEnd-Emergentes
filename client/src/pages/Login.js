@@ -4,17 +4,24 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Simulación de inicio de sesión
-    if (username === "lester" && password === "123") {
-      navigate("/landing");
-    } else {
-      alert("Credenciales incorrectas.");
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", { email, password });
+
+      if (response.data.success) {
+        alert("Inicio de sesión exitoso.");
+        navigate("/landing");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      alert("Error en el inicio de sesión. Verifica tus credenciales.");
+      console.error("Error al iniciar sesión:", error);
     }
   };
 
@@ -23,10 +30,10 @@ function Login() {
       <form className="auth-form" onSubmit={handleLogin}>
         <h2>Iniciar Sesión</h2>
         <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          placeholder="Correo Electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
