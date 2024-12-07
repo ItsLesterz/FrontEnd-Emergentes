@@ -80,7 +80,25 @@ function AdministrarUsuarios() {
     }
   };
 
-  // Otros métodos no se modifican en este caso
+  // Eliminar Usuario
+  const handleDeleteUser = (userId) => {
+    // Aquí puedes agregar una solicitud DELETE al backend
+    setUsers(users.filter((user) => user.id !== userId));
+    alert("Usuario eliminado");
+  };
+
+  // Cambiar Contraseña
+  const handleChangePassword = () => {
+    if (newPassword !== confirmNewPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+    alert("Contraseña cambiada exitosamente");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setShowChangePassword(false);
+  };
 
   return (
     <div>
@@ -167,7 +185,63 @@ function AdministrarUsuarios() {
         </div>
       )}
 
-      {/* Aquí se mantienen los otros pop-ups sin cambios */}
+      {/* Pop-up Eliminar Usuario */}
+      {showDeleteUser && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Eliminar Usuario</h3>
+            <ul>
+              {users.map((user) => (
+                <li key={user.id}>
+                  {user.name} ({user.email}, {user.role})
+                  <button
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="btn btn-danger"
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => setShowDeleteUser(false)} className="btn btn-secondary">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Pop-up Cambiar Contraseña */}
+      {showChangePassword && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Cambiar Contraseña</h3>
+            <input
+              type="password"
+              placeholder="Contraseña actual"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Nueva contraseña"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Confirmar nueva contraseña"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+            />
+            <button onClick={handleChangePassword} className="btn btn-warning">
+              Cambiar
+            </button>
+            <button onClick={() => setShowChangePassword(false)} className="btn btn-secondary">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
