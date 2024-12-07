@@ -11,10 +11,17 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/login", { email, password });
-
+      const response = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      });
+  
+      console.log("Response Data:", response.data); // Depuración
+  
       if (response.data.success) {
         alert("Inicio de sesión exitoso.");
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        console.log("Navigating to /landing"); // Depuración
         navigate("/landing");
       } else {
         alert(response.data.message);
@@ -24,6 +31,7 @@ function Login() {
       console.error("Error al iniciar sesión:", error);
     }
   };
+  
 
   return (
     <div className="auth-container">

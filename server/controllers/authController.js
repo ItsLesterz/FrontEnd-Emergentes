@@ -10,13 +10,16 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales incorrectas' });
     }
 
-    const token = jwt.sign({ id: user.id_usuario, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-    res.json({ token });
+    const token = jwt.sign(
+      { id: user.id_usuario, email: user.email, id_rol: user.id_rol },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.json({ token, user: { id: user.id_usuario, email: user.email, id_rol: user.id_rol } });
   } catch (error) {
     res.status(500).json({ message: 'Error en el servidor', error });
   }
 };
 
 module.exports = { login };
+
