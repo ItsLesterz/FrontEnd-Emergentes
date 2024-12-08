@@ -20,6 +20,9 @@ function AdministrarUsuarios() {
   const [alertMessage, setAlertMessage] = useState(""); // Mensajes de éxito o error
   const [alertType, setAlertType] = useState(""); // Tipo de alerta: success o error
 
+  const [emailToDelete, setEmailToDelete] = useState("");
+
+
   // Mostrar alertas
   const showAlert = (message, type) => {
     setAlertMessage(message);
@@ -80,12 +83,42 @@ function AdministrarUsuarios() {
     }
   };
 
-  // Eliminar Usuario
-  const handleDeleteUser = (userId) => {
-    // Aquí puedes agregar una solicitud DELETE al backend
-    setUsers(users.filter((user) => user.id !== userId));
-    alert("Usuario eliminado");
-  };
+  //Delete user
+  const handleDeleteUser = async () => {
+  if (!emailToDelete) {
+    showAlert("Por favor, ingresa un correo electrónico", "error");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    // Enviar la solicitud DELETE
+    const response = await axios.delete("http://localhost:5000/api/delete", {
+      data: { email: emailToDelete }, // Enviar el email en el cuerpo
+    });
+
+    // Mostrar mensaje de éxito
+    showAlert(response.data.message || "Usuario eliminado exitosamente", "success");
+
+    // Actualizar la lista de usuarios en el frontend
+    setUsers((prevUsers) => prevUsers.filter((user) => user.email !== emailToDelete));
+
+    // Limpiar el estado local relacionado
+    setEmailToDelete("");
+    setShowDeleteUser(false);
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error.response || error.message);
+
+    // Manejar el mensaje de error del servidor
+    const errorMessage =
+      error.response?.data?.message || "Error desconocido al eliminar usuario";
+    showAlert(errorMessage, "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
 
   // Cambiar Contraseña
   const handleChangePassword = () => {
@@ -186,29 +219,35 @@ function AdministrarUsuarios() {
       )}
 
       {/* Pop-up Eliminar Usuario */}
-      {showDeleteUser && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Eliminar Usuario</h3>
-            <ul>
-              {users.map((user) => (
-                <li key={user.id}>
-                  {user.name} ({user.email}, {user.role})
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="btn btn-danger"
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => setShowDeleteUser(false)} className="btn btn-secondary">
-              Cerrar
-            </button>
-          </div>
+    {showDeleteUser && (
+      <div className="modal">
+        <div className="modal-content">
+          <h3>Eliminar Usuario</h3>
+          <input
+            type="email"
+            placeholder="Correo del usuario a eliminar"
+            value={emailToDelete}
+            onChange={(e) => setEmailToDelete(e.target.value)}
+          />
+          <button
+            onClick={handleDeleteUser}
+            className="btn btn-danger"
+            disabled={loading}
+          >
+            {loading ? "Procesando..." : "Eliminar"}
+          </button>
+          <button
+            onClick={() => setShowDeleteUser(false)}
+            className="btn btn-secondary"
+            disabled={loading}
+          >
+            Cerrar
+          </button>
         </div>
-      )}
+      </div>
+    )}
+
+
 
       {/* Pop-up Cambiar Contraseña */}
       {showChangePassword && (

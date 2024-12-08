@@ -97,6 +97,31 @@ router.get("/users", async (req, res) => {
   }
 });
 
+// Eliminar usuario por correo
+router.delete("/delete", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "El campo 'email' es obligatorio" });
+  }
+
+  try {
+    console.log("Email recibido para eliminar:", email);
+
+    const [result] = await pool.query("DELETE FROM Usuarios WHERE email = ?", [email]);
+    console.log("Resultado de la consulta:", result);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({ message: "Usuario eliminado exitosamente" });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ message: "Error al eliminar usuario" });
+  }
+});
+
 
 
 module.exports = router;
