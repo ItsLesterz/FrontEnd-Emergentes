@@ -121,17 +121,39 @@ function AdministrarUsuarios() {
   
 
   // Cambiar Contraseña
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
+    // Validar que las contraseñas coincidan
     if (newPassword !== confirmNewPassword) {
-      alert("Las contraseñas no coinciden");
+      showAlert("Las contraseñas no coinciden", "error");
       return;
     }
-    alert("Contraseña cambiada exitosamente");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmNewPassword("");
-    setShowChangePassword(false);
+  
+    // Enviar solicitud al backend
+    setLoading(true);
+    try {
+      const response = await axios.put("http://localhost:5000/api/change-password", {
+        email: currentPassword, // Aquí se usa el campo de "contraseña actual" para capturar el email
+        newPassword,
+        confirmNewPassword,
+      });
+  
+      // Mostrar mensaje de éxito
+      showAlert(response.data.message || "Contraseña actualizada exitosamente", "success");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowChangePassword(false);
+    } catch (error) {
+      console.error("Error al cambiar contraseña:", error.response || error.message);
+  
+      // Mostrar mensaje de error
+      const errorMessage = error.response?.data?.message || "Error desconocido al cambiar contraseña";
+      showAlert(errorMessage, "error");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div>
@@ -250,37 +272,38 @@ function AdministrarUsuarios() {
 
 
       {/* Pop-up Cambiar Contraseña */}
-      {showChangePassword && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Cambiar Contraseña</h3>
-            <input
-              type="password"
-              placeholder="Contraseña actual"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Nueva contraseña"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Confirmar nueva contraseña"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
-            <button onClick={handleChangePassword} className="btn btn-warning">
-              Cambiar
-            </button>
-            <button onClick={() => setShowChangePassword(false)} className="btn btn-secondary">
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
+{showChangePassword && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Cambiar Contraseña</h3>
+      <input
+        type="email"
+        placeholder="Correo del usuario"
+        value={currentPassword}
+        onChange={(e) => setCurrentPassword(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Nueva contraseña"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Confirmar nueva contraseña"
+        value={confirmNewPassword}
+        onChange={(e) => setConfirmNewPassword(e.target.value)}
+      />
+      <button onClick={handleChangePassword} className="btn btn-warning" disabled={loading}>
+        {loading ? "Procesando..." : "Cambiar"}
+      </button>
+      <button onClick={() => setShowChangePassword(false)} className="btn btn-secondary">
+        Cancelar
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

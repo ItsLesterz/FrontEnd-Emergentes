@@ -122,6 +122,40 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+// Ruta para cambiar la contraseña de un usuario
+router.put("/change-password", async (req, res) => {
+  const { email, newPassword, confirmNewPassword } = req.body;
+
+  try {
+    // Validar que se hayan enviado todos los campos
+    if (!email || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios." });
+    }
+
+    // Validar que las contraseñas coincidan
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ success: false, message: "Las contraseñas no coinciden." });
+    }
+
+    // Verificar si el usuario existe
+    const [user] = await pool.query("SELECT * FROM Usuarios WHERE email = ?", [email]);
+    if (user.length === 0) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    // Encriptar la nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Actualizar la contraseña en la base de datos
+    await pool.query("UPDATE Usuarios SET contraseña = ? WHERE email = ?", [hashedPassword, email]);
+
+    res.status(200).json({ success: true, message: "Contraseña actualizada exitosamente." });
+  } catch (error) {
+    console.error("Error al cambiar contraseña:", error);
+    res.status(500).json({ success: false, message: "Error al cambiar contraseña." });
+  }
+});
 
 
 module.exports = router;
